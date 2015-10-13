@@ -111,7 +111,7 @@ public extension UIColor {
 
 	class func colorForHexString(colorCode: String) -> UIColor { return hn_colorForHexString(colorCode) }
 
-	class func colorForString(string: String, withIdeal color: UIColor) -> UIColor? { return hn_colorForString(string, withIdeal: color) }
+	class func colorForString(string: String, withIdeal color: UIColor?) -> UIColor? { return hn_colorForString(string, withIdeal: color) }
 
 }
 
