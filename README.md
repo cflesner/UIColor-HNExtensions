@@ -10,8 +10,8 @@ There are a few methods for getting one of the components UIColor consists of, s
 
 Example:
 
-    CGFloat redComponent = [[UIColor redColor] getRed];
-    CGFloat blueComponent = [[UIColor redColor] getBlue];
+    CGFloat redComponent = [[UIColor redColor] hn_getRed];
+    CGFloat blueComponent = [[UIColor redColor] hn_getBlue];
 
 
 Colour palette
@@ -22,7 +22,7 @@ Convenience methods for getting a colour palette from a colour. Different types 
 Example:
 
     // Returns colours that are roughly blueColor and greenColor
-    NSArray *triadicColours = [[UIColor redColor] triadicColors];
+    NSArray *triadicColours = [[UIColor redColor] hn_triadicColors];
 
 Accessibility
 -------------
@@ -32,10 +32,10 @@ Few methods for determining the contrast between two colours according to WGAC s
 Example:
 
     // Returns whiteColor as it's most contrasting with blue
-    UIColor *textColor = [[UIColor blueColor] contrastingTextColor];
+    UIColor *textColor = [[UIColor blueColor] hn_contrastingTextColor];
     
     // Returns ~13.85 as the ratio according to WGAC standard
-    CGFloat contrastRatio = [[UIColor blueColor] contrastRatioWithColor:[UIColor whiteColor]]; 
+    CGFloat contrastRatio = [[UIColor blueColor] hn_contrastRatioWithColor:[UIColor whiteColor]]; 
 
 Gradients
 ---------
@@ -45,10 +45,10 @@ Methods for getting an interpolated colour in an array of colours, which can be 
 Example:
 
     // Returns a colour exactly in the middle between white and black (so 50% gray)
-    UIColor *gray = [UIColor colorAtPosition:.5f fromColor:[UIColor blackColor] toColor:[UIColor whiteColor]];
+    UIColor *gray = [UIColor hn_colorAtPosition:.5f fromColor:[UIColor blackColor] toColor:[UIColor whiteColor]];
     
     // Equivalent to the previous call, but allows more than two colour gradients
-    UIColor *gray = [UIColor colorAtPosition:.5f withinColors:@[[UIColor whiteColor], [UIColor blackColor]]];
+    UIColor *gray = [UIColor hn_colorAtPosition:.5f withinColors:@[[UIColor whiteColor], [UIColor blackColor]]];
 
 Blending
 --------
@@ -64,7 +64,7 @@ Example:
 
     // Getting the same effect as if you had used a blend mode when filling a colour on top of another colour
     // For example, overlay of white on darker blue produces full blue
-    UIColor *overlayBlue = [[UIColor colorForHexString:@"0000da"] colorByBlendingWithColor:[UIColor whiteColor] mode:kColorBlendingModeOverlay]
+    UIColor *overlayBlue = [[UIColor hn_colorForHexString:@"0000da"] hn_colorByBlendingWithColor:[UIColor whiteColor] mode:kColorBlendingModeOverlay]
     
 Miscellaneous
 -------------

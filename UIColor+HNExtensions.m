@@ -31,8 +31,7 @@
 #pragma mark - 
 #pragma mark C helpers
 
-NSArray * UIColorAdjacentColorsToColor(UIColor *color);
-NSArray * UIColorAdjacentColorsToColor(UIColor *color) {
+static NSArray * UIColorAdjacentColorsToColor(UIColor *color) {
     // Start by grabbing the hue, and other parameters of the color we are processing
     CGFloat hue = 0.f; CGFloat saturation = 0.f; CGFloat brightness = 1.f; CGFloat alpha = 1.f;
     
@@ -59,48 +58,47 @@ NSArray * UIColorAdjacentColorsToColor(UIColor *color) {
 }
 
 typedef float (^BlendingBlock)(float destination, float source);
-BlendingBlock BlendingBlockForMode(UIColorBlendingMode blendMode);
-BlendingBlock BlendingBlockForMode(UIColorBlendingMode blendMode)
+static BlendingBlock BlendingBlockForMode(HNColorBlendingMode blendMode)
 {
     // Formulas are based on http://www.pegtop.net/delphi/articles/blendmodes/
     BlendingBlock resultBlock = NULL;
     switch (blendMode) {
-        case kColorBlendingModeNormal:
+        case HNColorBlendingModeNormal:
             resultBlock = ^(float destination, float source){ return source; };
             break;
-        case kColorBlendingModeMultiply:
+        case HNColorBlendingModeMultiply:
             resultBlock = ^(float destination, float source){ return destination * source; };
             break;
-        case kColorBlendingModeScreen:
+        case HNColorBlendingModeScreen:
             resultBlock = ^(float destination, float source){ return destination + source - (destination * source); };
             break;
-        case kColorBlendingModeOverlay:
+        case HNColorBlendingModeOverlay:
             resultBlock = ^(float destination, float source){ return destination <= 0.5f ? source * (destination / 0.5f) :
                 source * ((source - destination) / 0.5f) + (destination - (source - destination)); };
             break;
-        case kColorBlendingModeDarken:
+        case HNColorBlendingModeDarken:
             resultBlock = ^(float destination, float source){ return MIN(source, destination); };
             break;
-        case kColorBlendingModeLighten:
+        case HNColorBlendingModeLighten:
             resultBlock = ^(float destination, float source){ return MAX(source, destination); };
             break;
-        case kColorBlendingModeColorDodge:
+        case HNColorBlendingModeColorDodge:
             resultBlock = ^(float destination, float source){ return source == 1.f ? 0.f : destination / (1.f - source); };
             break;
-        case kColorBlendingModeColorBurn:
+        case HNColorBlendingModeColorBurn:
             resultBlock = ^(float destination, float source){ return source == 0.f ? 1.f : 1.0f - (1.f - destination) / source; };
             break;
-        case kColorBlendingModeHardLight:
+        case HNColorBlendingModeHardLight:
             resultBlock = ^(float destination, float source){ return source >= 0.5f ? 2.f * destination * source : 1.f - 2.f * (1.f - destination) * (1.f - source); };
             break;
-        case kColorBlendingModeSoftLight:
+        case HNColorBlendingModeSoftLight:
             resultBlock = ^(float destination, float source){
                 return (1.f - destination) * (destination * source) + destination * (destination + source - (destination * source)); };
             break;
-        case kColorBlendingModeDifference:
+        case HNColorBlendingModeDifference:
             resultBlock = ^(float destination, float source){ return fabsf(destination - source); };
             break;
-        case kColorBlendingModeExclusion:
+        case HNColorBlendingModeExclusion:
             resultBlock = ^(float destination, float source){ return 0.5f - 2.f * (destination - 0.5f) * (source - 0.5f); };
         default:
             break;
@@ -114,7 +112,7 @@ BlendingBlock BlendingBlockForMode(UIColorBlendingMode blendMode)
 #pragma mark -
 #pragma mark Components
 
-- (CGFloat)getAlpha {
+- (CGFloat)hn_getAlpha {
     CGFloat alpha = 0.f;
     
     if ([self getWhite:NULL alpha:&alpha])
@@ -124,43 +122,43 @@ BlendingBlock BlendingBlockForMode(UIColorBlendingMode blendMode)
     return alpha;
 }
 
-- (CGFloat)getRed {
+- (CGFloat)hn_getRed {
     CGFloat red = 0.f;
     [self getRed:&red green:NULL blue:NULL alpha:NULL];
     return red;
 }
 
-- (CGFloat)getGreen {
+- (CGFloat)hn_getGreen {
     CGFloat green = 0.f;
     [self getRed:NULL green:&green blue:NULL alpha:NULL];
     return green;
 }
 
-- (CGFloat)getBlue {
+- (CGFloat)hn_getBlue {
     CGFloat blue = 0.f;
     [self getRed:NULL green:NULL blue:&blue alpha:NULL];
     return blue;
 }
 
-- (CGFloat)getSaturation {
+- (CGFloat)hn_getSaturation {
     CGFloat saturation = 0.f;
     [self getHue:NULL saturation:&saturation brightness:NULL alpha:NULL];
     return saturation;
 }
 
-- (CGFloat)getBrightness {
+- (CGFloat)hn_getBrightness {
     CGFloat brightness = 0.f;
     [self getHue:NULL saturation:NULL brightness:&brightness alpha:NULL];
     return brightness;
 }
 
-- (CGFloat)getHue {
+- (CGFloat)hn_getHue {
     CGFloat hue = 0.f;
     [self getHue:&hue saturation:NULL brightness:NULL alpha:NULL];
     return hue;
 }
 
-- (CGFloat)getLuminance {
+- (CGFloat)hn_getLuminance {
     CGFloat r, g, b;
     
     // If RGB, grab values, if not then use the white value (gray-scale)
@@ -189,11 +187,11 @@ BlendingBlock BlendingBlockForMode(UIColorBlendingMode blendMode)
     return 0.2126f * r + 0.7152f * g + 0.0722f * b;
 }
 
-- (BOOL)isPatternBased {
+- (BOOL)hn_isPatternBased {
     return CGColorGetPattern(self.CGColor) != nil;
 }
 
-- (BOOL)isEqualToColor:(UIColor *)otherColor {
+- (BOOL)hn_isEqualToColor:(UIColor *)otherColor {
     if (![otherColor isKindOfClass:[UIColor class]])
         return NO;
     
@@ -221,7 +219,7 @@ BlendingBlock BlendingBlockForMode(UIColorBlendingMode blendMode)
     return [selfColor isEqual:otherColor];
 }
 
-- (UIColor *)colorWithSaturation:(CGFloat)saturation {
+- (UIColor *)hn_colorWithSaturation:(CGFloat)saturation {
     // Convert the color to HSB values
     CGFloat hue;
     CGFloat brightness;
@@ -231,7 +229,7 @@ BlendingBlock BlendingBlockForMode(UIColorBlendingMode blendMode)
     return [UIColor colorWithHue:hue saturation:CLAMP(saturation, 0.f, 1.f) brightness:brightness alpha:alpha];
 }
 
-- (UIColor *)colorWithBrightness:(CGFloat)brightness {
+- (UIColor *)hn_colorWithBrightness:(CGFloat)brightness {
     // Convert the color to HSB values
     CGFloat hue;
     CGFloat saturation;
@@ -241,7 +239,7 @@ BlendingBlock BlendingBlockForMode(UIColorBlendingMode blendMode)
     return [UIColor colorWithHue:hue saturation:saturation brightness:CLAMP(brightness, 0.f, 1.f) alpha:alpha];
 }
 
-- (UIColor *)colorWithHue:(CGFloat)hue {
+- (UIColor *)hn_colorWithHue:(CGFloat)hue {
     // Convert the color to HSB values
     CGFloat brightness;
     CGFloat saturation;
@@ -254,7 +252,7 @@ BlendingBlock BlendingBlockForMode(UIColorBlendingMode blendMode)
 #pragma mark -
 #pragma mark Dimming
 
-- (UIColor *)dimmedColor {
+- (UIColor *)hn_dimmedColor {
     CGFloat hue;
     CGFloat brightness;
     CGFloat saturation;
@@ -267,7 +265,7 @@ BlendingBlock BlendingBlockForMode(UIColorBlendingMode blendMode)
 #pragma mark -
 #pragma mark Color palette
 
-- (UIColor *)complementaryColor {    
+- (UIColor *)hn_complementaryColor {
     CGFloat hue = 0.0; CGFloat saturation = 0.f; CGFloat brightness = 1.f; CGFloat alpha = 1.f;
     
     if ([self getHue:&hue saturation:&saturation brightness:&brightness alpha:&alpha]) {
@@ -282,12 +280,12 @@ BlendingBlock BlendingBlockForMode(UIColorBlendingMode blendMode)
     return nil;
 }
 
-- (NSArray *)analogousColors {
+- (NSArray *)hn_analogousColors {
     return @[[self copy], UIColorAdjacentColorsToColor(self)];
 }
 
-- (NSArray *)splitComplementaryColors {
-    UIColor *complementary = [self complementaryColor];
+- (NSArray *)hn_splitComplementaryColors {
+    UIColor *complementary = [self hn_complementaryColor];
     if (complementary)
         return @[[self copy], UIColorAdjacentColorsToColor(complementary)];
     
@@ -295,7 +293,7 @@ BlendingBlock BlendingBlockForMode(UIColorBlendingMode blendMode)
     return nil;
 }
 
-- (NSArray *)triadicColors {
+- (NSArray *)hn_triadicColors {
     CGFloat hue = 0.f; CGFloat saturation = 0.f; CGFloat brightness = 1.f; CGFloat alpha = 1.f;
     
     if ([self getHue:&hue saturation:&saturation brightness:&brightness alpha:&alpha]) {
@@ -317,8 +315,8 @@ BlendingBlock BlendingBlockForMode(UIColorBlendingMode blendMode)
     return nil;
 }
 
-- (NSArray *)tetradicColors {
-    UIColor *complementary = [self complementaryColor];
+- (NSArray *)hn_tetradicColors {
+    UIColor *complementary = [self hn_complementaryColor];
     
     if (complementary) {
         CGFloat hue = 0.f; CGFloat saturation = 0.f; CGFloat brightness = 1.f; CGFloat alpha = 1.f;
@@ -336,8 +334,8 @@ BlendingBlock BlendingBlockForMode(UIColorBlendingMode blendMode)
     return nil;
 }
 
-- (NSArray *)squareColors {
-    UIColor *complementary = [self complementaryColor];
+- (NSArray *)hn_squareColors {
+    UIColor *complementary = [self hn_complementaryColor];
     
     if (complementary) {
         CGFloat hue = 0.f; CGFloat saturation = 0.f; CGFloat brightness = 1.f; CGFloat alpha = 1.f;
@@ -358,28 +356,28 @@ BlendingBlock BlendingBlockForMode(UIColorBlendingMode blendMode)
 #pragma mark -
 #pragma mark Accessibility
 
-- (UIColor *)contrastingTextColor {
-    CGFloat luminance = [self getLuminance];
+- (UIColor *)hn_contrastingTextColor {
+    CGFloat luminance = [self hn_getLuminance];
     return luminance > 0.5f ? [UIColor blackColor] : [UIColor whiteColor];
 }
 
-- (CGFloat)contrastRatioWithColor: (UIColor *)color {
-    CGFloat luminance1 = [self getLuminance];
-    CGFloat luminance2 = [color getLuminance];
+- (CGFloat)hn_contrastRatioWithColor: (UIColor *)color {
+    CGFloat luminance1 = [self hn_getLuminance];
+    CGFloat luminance2 = [color hn_getLuminance];
     
     // Make sure to return the contrast ratio in correct form
     // Divide lighter colour by the darker one
     return luminance1 > luminance2 ? luminance1 / luminance2 : luminance2 / luminance1;
 }
 
-- (BOOL)isAccessibleWithBackgroundColor:(UIColor *)color {
-    return [self contrastRatioWithColor:color] > 4.5f;
+- (BOOL)hn_isAccessibleWithBackgroundColor:(UIColor *)color {
+    return [self hn_contrastRatioWithColor:color] > 4.5f;
 }
 
 #pragma mark -
 #pragma mark Gradients
 
-+ (UIColor *)colorAtPosition:(CGFloat)position fromColor:(UIColor *)fromColor toColor:(UIColor *)toColor {
++ (UIColor *)hn_colorAtPosition:(CGFloat)position fromColor:(UIColor *)fromColor toColor:(UIColor *)toColor {
     // Components
     CGFloat fromRed, fromGreen, fromBlue, fromAlpha;
     CGFloat toRed, toGreen, toBlue, toAlpha;
@@ -408,7 +406,7 @@ BlendingBlock BlendingBlockForMode(UIColorBlendingMode blendMode)
     return [UIColor colorWithRed:red green:green blue:blue alpha:alpha];
 }
 
-+ (UIColor *)colorAtPosition:(CGFloat)position withinColors:(NSArray *)colors {
++ (UIColor *)hn_colorAtPosition:(CGFloat)position withinColors:(NSArray *)colors {
     // Check the count, if 0 return nil, if 1 return that colour
     if ([colors count] < 2)
         return [colors firstObject];
@@ -423,7 +421,7 @@ BlendingBlock BlendingBlockForMode(UIColorBlendingMode blendMode)
     NSInteger toIndex = ceilf(position / split);
     
     CGFloat remainder = fmodf(position, split);
-    return [UIColor colorAtPosition:(remainder / split) fromColor:[colors objectAtIndex:fromIndex] toColor:[colors objectAtIndex:toIndex]];
+    return [UIColor hn_colorAtPosition:(remainder / split) fromColor:[colors objectAtIndex:fromIndex] toColor:[colors objectAtIndex:toIndex]];
 }
 
 #pragma mark -
@@ -434,11 +432,11 @@ static NSUInteger const ColorBlueChannel = 1;
 static NSUInteger const ColorGreenChannel = 2;
 static NSUInteger const ColorAlphaChannel = 3;
 
-- (UIColor *)colorByBlendingWithColor:(UIColor *)source mode:(UIColorBlendingMode)mode {
-    return [self colorByBlendingWithColor:source mode:mode alpha:1.f];
+- (UIColor *)hn_colorByBlendingWithColor:(UIColor *)source mode:(HNColorBlendingMode)mode {
+    return [self hn_colorByBlendingWithColor:source mode:mode alpha:1.f];
 }
 
-- (UIColor *)colorByBlendingWithColor:(UIColor *)sourceColor mode:(UIColorBlendingMode)mode alpha:(CGFloat)alpha {
+- (UIColor *)hn_colorByBlendingWithColor:(UIColor *)sourceColor mode:(HNColorBlendingMode)mode alpha:(CGFloat)alpha {
     // Calculation is based on http://partners.adobe.com/public/developer/en/pdf/PDFReference.pdf by Adobe
     // The blend modes are calculated as shown in http://www.pegtop.net/delphi/articles/blendmodes/ by Pegtop
     // Make sure the two are in the same colorspace
@@ -481,7 +479,7 @@ static NSUInteger const ColorAlphaChannel = 3;
     return [UIColor colorWithRed:result[ColorRedChannel] green:result[ColorGreenChannel] blue:result[ColorBlueChannel] alpha:destination[ColorAlphaChannel]];
 }
 
-+ (UIColor *)randomColor {
++ (UIColor *)hn_randomColor {
     // Generate three random values
     NSInteger r = arc4random() % 256;
     NSInteger g = arc4random() % 256;
@@ -491,7 +489,7 @@ static NSUInteger const ColorAlphaChannel = 3;
     return [UIColor colorWithRed:r / 255.f green:g / 255.f blue:b / 255.f alpha:1.f];
 }
 
-+ (UIColor *)colorForHexString:(NSString *)colorCode {
++ (UIColor *)hn_colorForHexString:(NSString *)colorCode {
     NSMutableString *string = [NSMutableString stringWithString:colorCode];
     [string replaceOccurrencesOfString:@"#" withString:@"" options:0 range:NSMakeRange(0, [string length])];
     
@@ -548,7 +546,7 @@ static NSUInteger const ColorAlphaChannel = 3;
                            alpha:1.f];
 }
 
-+ (UIColor *)colorForString:(NSString *)string withIdeal:(UIColor *)color {
++ (UIColor *)hn_colorForString:(NSString *)string withIdeal:(UIColor *)color {
     if ([string length] == 0)
         return nil;
     
@@ -559,8 +557,8 @@ static NSUInteger const ColorAlphaChannel = 3;
     UIColor *match = nil;
     CGFloat bestSaturationDiff = 1.f;
     CGFloat bestBrightnessDiff = 1.f;
-    CGFloat idealSaturation = color ? [color getSaturation] : 0.5;
-    CGFloat idealBrightness = color ? [color getBrightness] : 0.5;
+    CGFloat idealSaturation = color ? [color hn_getSaturation] : 0.5;
+    CGFloat idealBrightness = color ? [color hn_getBrightness] : 0.5;
     
     NSUInteger offset = 0;
     while (offset + 3 < CC_SHA1_DIGEST_LENGTH) {
@@ -574,11 +572,11 @@ static NSUInteger const ColorAlphaChannel = 3;
             continue;
         }
         
-        CGFloat saturationDiff = fabsf([color getSaturation] - idealSaturation);
+        CGFloat saturationDiff = fabs([color hn_getSaturation] - idealSaturation);
         if (saturationDiff >= bestSaturationDiff)
             continue;
         
-        CGFloat brightnessDiff = fabsf([color getBrightness] - idealBrightness);
+        CGFloat brightnessDiff = fabs([color hn_getBrightness] - idealBrightness);
         if (brightnessDiff >= bestBrightnessDiff)
             continue;
         
@@ -590,7 +588,7 @@ static NSUInteger const ColorAlphaChannel = 3;
     return match;
 }
 
-- (NSString *)hexString {
+- (NSString *)hn_hexString {
     // Grab the components
     CGFloat red, green, blue, alpha;
     [self getRed:&red green:&green blue:&blue alpha:&alpha];
