@@ -128,27 +128,27 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  *  @return Array of 3 UIColor objects that are analogous to the receiver
  */
-- (NSArray *)hn_analogousColors;
+- (NSArray<UIColor *> *)hn_analogousColors;
 
 /**
  *  @return Array of 3 UIColor objects that make the split complementary palette for the receiver
  */
-- (nullable NSArray *)hn_splitComplementaryColors;
+- (nullable NSArray<UIColor *> *)hn_splitComplementaryColors;
 
 /**
  *  @return Array of 3 UIColor objects that represent the triadic palette for the receiver
  */
-- (nullable NSArray *)hn_triadicColors;
+- (nullable NSArray<UIColor *> *)hn_triadicColors;
 
 /**
  *  @return Array of 4 UIColors that form the tetradic palette with the receiver
  */
-- (nullable NSArray *)hn_tetradicColors;
+- (nullable NSArray<UIColor *> *)hn_tetradicColors;
 
 /**
  *  @return Array of 4 UIColors that form square palette with the receiver on the color wheel
  */
-- (nullable NSArray *)hn_squareColors;
+- (nullable NSArray<UIColor *> *)hn_squareColors;
 
 #pragma mark -
 #pragma mark Accessibility
@@ -194,7 +194,7 @@ NS_ASSUME_NONNULL_BEGIN
  *
  *  @return Color at the given position in the gradient
  */
-+ (UIColor *)hn_colorAtPosition:(CGFloat)position withinColors:(NSArray *)colors;
++ (UIColor *)hn_colorAtPosition:(CGFloat)position withinColors:(NSArray<UIColor *> *)colors;
 
 #pragma mark -
 #pragma mark Blending
@@ -270,7 +270,7 @@ typedef NS_ENUM(NSInteger, HNColorBlendingMode) {
  *
  *  @return Color derived from the string
  */
-+ (nullable UIColor *)hn_colorForString:(NSString *)string withIdeal:(UIColor *)color;
++ (nullable UIColor *)hn_colorForString:(NSString *)string withIdeal:(nullable UIColor *)color;
 
 @end
 

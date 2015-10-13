@@ -281,13 +281,13 @@ static BlendingBlock BlendingBlockForMode(HNColorBlendingMode blendMode)
 }
 
 - (NSArray *)hn_analogousColors {
-    return @[[self copy], UIColorAdjacentColorsToColor(self)];
+	return [[self copy] arrayByAddingObjectsFromArray:UIColorAdjacentColorsToColor(self)];
 }
 
 - (NSArray *)hn_splitComplementaryColors {
     UIColor *complementary = [self hn_complementaryColor];
     if (complementary)
-        return @[[self copy], UIColorAdjacentColorsToColor(complementary)];
+        return [[self copy] arrayByAddingObjectsFromArray:UIColorAdjacentColorsToColor(complementary)];
     
     // Error, likely due to colour space issues
     return nil;
