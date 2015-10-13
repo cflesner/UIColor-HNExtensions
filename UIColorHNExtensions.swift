@@ -48,8 +48,8 @@ public extension UIColor {
 	var complementaryColor: UIColor? { return hn_complementaryColor() }
 
 
-	var analogousColors: (UIColor, UIColor, UIColor) {
-		let colors = hn_analogousColors()
+	var analogousColors: (UIColor, UIColor, UIColor)? {
+		guard let colors = hn_analogousColors() else { return nil }
 		return (colors[0], colors[1], colors[2])
 	}
 

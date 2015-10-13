@@ -128,7 +128,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  *  @return Array of 3 UIColor objects that are analogous to the receiver
  */
-- (NSArray<UIColor *> *)hn_analogousColors;
+- (nullable NSArray<UIColor *> *)hn_analogousColors;
 
 /**
  *  @return Array of 3 UIColor objects that make the split complementary palette for the receiver
