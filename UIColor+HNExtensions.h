@@ -233,7 +233,7 @@ typedef NS_ENUM(NSInteger, HNColorBlendingMode) {
  *
  *  @return Result from blending receiver with source
  */
-- (nullable UIColor *)hn_colorByBlendingWithColor:(UIColor *)source mode:(HNColorBlendingMode)mode alpha:(CGFloat)alpha;
+- (UIColor *)hn_colorByBlendingWithColor:(UIColor *)source mode:(HNColorBlendingMode)mode alpha:(CGFloat)alpha;
 
 #pragma mark -
 #pragma mark Misc

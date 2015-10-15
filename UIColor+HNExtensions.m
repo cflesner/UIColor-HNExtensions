@@ -449,8 +449,8 @@ static NSUInteger const ColorAlphaChannel = 3;
     CGColorSpaceModel sourceModel = CGColorSpaceGetModel(CGColorGetColorSpace([sourceColor CGColor]));
     if ((destinationModel != kCGColorSpaceModelMonochrome && destinationModel != kCGColorSpaceModelRGB) ||
         (sourceModel != kCGColorSpaceModelMonochrome && sourceModel != kCGColorSpaceModelRGB)) {
-        [[NSException exceptionWithName:NSInvalidArgumentException reason:@"Both colors have to be in either RGB or monochrome color space" userInfo:nil] raise];
-        return nil;
+		NSLog(@"Both colors have to be in either RGB or monochrome color space for %s to work.", __PRETTY_FUNCTION__);
+        return self;
     }
     
     CGFloat destination[4];

@@ -104,7 +104,7 @@ public extension UIColor {
 	}
 
 
-	func colorByBlendingWithColor(source: UIColor, mode: HNColorBlendingMode, alpha: CGFloat = 1.0) -> UIColor? {
+	func colorByBlendingWithColor(source: UIColor, mode: HNColorBlendingMode, alpha: CGFloat = 1.0) -> UIColor {
 		return hn_colorByBlendingWithColor(source, mode: mode, alpha: alpha)
 	}
 
